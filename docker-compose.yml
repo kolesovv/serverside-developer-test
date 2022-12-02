@@ -14,14 +14,22 @@ services:
     volumes:
       - ./src/main/resources/sk_example_db_data.sql:/docker-entrypoint-initdb.d/sk_example_db_data.sql
     networks:
-      backend:
-        aliases:
-          - "database"
+      - backend
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
+  user_service:
+    container_name: user_service
+    image: app/serverside-developer-test:0.0.1-SNAPSHOT
+    ports:
+      - "8081:8081"
+    depends_on:
+      sk_example_db:
+        condition: service_healthy
+    networks:
+      - backend
 networks:
   backend:
     driver: bridge
