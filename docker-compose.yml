@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  sk_example_db:
+    container_name: sk_example_db
+    image: postgres:15.1-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: sk_example_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./src/main/resources/sk_example_db_data.sql:/docker-entrypoint-initdb.d/sk_example_db_data.sql
+    networks:
+      backend:
+        aliases:
+          - "database"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+networks:
+  backend:
+    driver: bridge
