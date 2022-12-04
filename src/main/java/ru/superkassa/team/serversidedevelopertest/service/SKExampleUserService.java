@@ -31,32 +31,27 @@ public class SKExampleUserService {
     log.info("Got request body {}", userRequest);
 
     Integer id = userRequest.getId();
-    Optional<SKExampleUser> userOptional = userRepository.findById(id);
+    SKExampleUser exampleUser = userRepository.findById(id)
+        .orElseThrow(TeapotException::new);
 
-    if (userOptional.isPresent()) {
-      SKExampleUser exampleUser = userOptional.get();
-      Integer currentValueOfUser = exampleUser.getObj()
-          .get(CURRENT)
-          .intValue();
-      Integer addValue = userRequest.getAdd();
-      Integer newValueOfUser = increaseCurrentValue(currentValueOfUser, addValue);
+    Integer currentValueOfUser = exampleUser.getObj()
+        .get(CURRENT)
+        .intValue();
+    Integer addValue = userRequest.getAdd();
+    Integer newValueOfUser = increaseCurrentValue(currentValueOfUser, addValue);
 
-      log.info("Increased value's user form {} to {}", currentValueOfUser, newValueOfUser);
+    log.info("Increased value's user form {} to {}", currentValueOfUser, newValueOfUser);
 
-      ((ObjectNode) exampleUser.getObj()).put(CURRENT, newValueOfUser);
-      userRepository.save(exampleUser);
+    ((ObjectNode) exampleUser.getObj()).put(CURRENT, newValueOfUser);
+    userRepository.save(exampleUser);
 
-      SKExampleUserValueResponse response = SKExampleUserValueResponse.builder()
-          .current(newValueOfUser)
-          .build();
+    SKExampleUserValueResponse response = SKExampleUserValueResponse.builder()
+        .current(newValueOfUser)
+        .build();
 
-      log.info("Created response {}", response);
+    log.info("Created response {}", response);
 
-      return response;
-    }
-
-    log.info("Teapot is here =)");
-    throw new TeapotException();
+    return response;
   }
 
   public SKExampleUserResponse getUser(Integer id) {
