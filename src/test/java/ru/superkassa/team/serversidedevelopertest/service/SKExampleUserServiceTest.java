@@ -54,7 +54,7 @@ class SKExampleUserServiceTest {
     Mockito.verify(skExampleUserRepository).save(userArgumentCaptor.capture());
 
     int current = userArgumentCaptor.getValue().getObj().get(CURRENT).intValue();
-    int expected = exampleUser.getObj().get(CURRENT).intValue() + randomValue;
+    int expected = exampleUser.getObj().get(CURRENT).intValue();
 
     Assertions.assertThat(current).isEqualTo(expected);
   }
